@@ -19,3 +19,32 @@ class CompassCardinalTest {
     @Test fun west() = assertEquals("W", CompassRepository.toCardinal(270f))
     @Test fun northWest() = assertEquals("NW", CompassRepository.toCardinal(315f))
 }
+
+// --- Trip Timer Tests ---
+
+class ClockRepositoryTripTest {
+
+    @Test
+    fun `startTrip sets tripRunning true`() {
+        val repo = com.example.magicapp.features.clock.ClockRepository()
+        repo.startTrip()
+        assertEquals(true, repo.state.value.tripRunning)
+    }
+
+    @Test
+    fun `stopTrip sets tripRunning false`() {
+        val repo = com.example.magicapp.features.clock.ClockRepository()
+        repo.startTrip()
+        repo.stopTrip()
+        assertEquals(false, repo.state.value.tripRunning)
+    }
+
+    @Test
+    fun `resetTrip sets elapsed to zero and tripRunning false`() {
+        val repo = com.example.magicapp.features.clock.ClockRepository()
+        repo.startTrip()
+        repo.resetTrip()
+        assertEquals(0L, repo.state.value.tripElapsedSec)
+        assertEquals(false, repo.state.value.tripRunning)
+    }
+}
