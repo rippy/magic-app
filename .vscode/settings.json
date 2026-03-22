@@ -1,0 +1,9 @@
+{
+  "markdownlint.config": {
+    "extends": "${workspaceFolder}/.markdownlint.json"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "DavidAnson.vscode-markdownlint",
+    "editor.formatOnSave": true
+  }
+}
