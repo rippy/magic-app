@@ -4,10 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.magicapp.ui.DetailScreen
+import com.example.magicapp.ui.GlanceScreen
 
 private const val ROUTE_GLANCE = "glance"
 private const val ROUTE_DETAIL = "detail"
@@ -15,6 +18,7 @@ private const val ROUTE_DETAIL = "detail"
 @Composable
 fun AppNavHost(
     viewModel: AppViewModel,
+    modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController()
 ) {
     val mode by viewModel.mode.collectAsState()
@@ -33,22 +37,16 @@ fun AppNavHost(
         }
     }
 
-    NavHost(navController = navController, startDestination = ROUTE_GLANCE) {
+    NavHost(
+        navController = navController,
+        startDestination = ROUTE_GLANCE,
+        modifier = modifier
+    ) {
         composable(ROUTE_GLANCE) {
-            GlanceScreenPlaceholder(viewModel = viewModel)
+            GlanceScreen(viewModel = viewModel)
         }
         composable(ROUTE_DETAIL) {
-            DetailScreenPlaceholder(viewModel = viewModel)
+            DetailScreen(viewModel = viewModel)
         }
     }
-}
-
-@Composable
-private fun GlanceScreenPlaceholder(viewModel: AppViewModel) {
-    // Replaced in Task 9
-}
-
-@Composable
-private fun DetailScreenPlaceholder(viewModel: AppViewModel) {
-    // Replaced in Task 10
 }

@@ -3,7 +3,7 @@
 let
   androidComposition = pkgs.androidenv.composeAndroidPackages {
     buildToolsVersions = [ "34.0.0" ];
-    platformVersions = [ "29" ];
+    platformVersions = [ "29" "34" ];
     includeEmulator = false;
     includeSystemImages = false;
   };

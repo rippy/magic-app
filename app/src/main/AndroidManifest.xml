@@ -36,8 +36,6 @@
         android:label="Magic App"
         android:theme="@style/Theme.MagicApp"
         android:allowBackup="false"
-        android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true">
 
         <activity
