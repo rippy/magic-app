@@ -28,6 +28,14 @@ import androidx.compose.ui.unit.dp
 import com.example.magicapp.AppViewModel
 import com.example.magicapp.DiagnosticViewModel
 import com.example.magicapp.Feature
+import com.example.magicapp.ui.components.BtScreen
+import com.example.magicapp.ui.components.CarButtonScreen
+import com.example.magicapp.ui.components.ClockScreen
+import com.example.magicapp.ui.components.CompassScreen
+import com.example.magicapp.ui.components.GpsScreen
+import com.example.magicapp.ui.components.MicScreen
+import com.example.magicapp.ui.components.SystemInfoScreen
+import com.example.magicapp.ui.components.WifiScreen
 
 @Composable
 fun DetailScreen(
@@ -57,10 +65,44 @@ fun DetailScreen(
                 .weight(1f)
                 .fillMaxHeight()
         ) {
-            FeaturePlaceholder(
-                feature = selectedFeature,
-                modifier = Modifier.fillMaxSize()
-            )
+            when (selectedFeature) {
+                Feature.GPS -> GpsScreen(
+                    repository = diagnosticViewModel.gps,
+                    modifier = Modifier.fillMaxSize()
+                )
+                Feature.WIFI_SCANNER -> WifiScreen(
+                    repository = diagnosticViewModel.wifi,
+                    modifier = Modifier.fillMaxSize()
+                )
+                Feature.BT_SCANNER -> BtScreen(
+                    repository = diagnosticViewModel.bt,
+                    modifier = Modifier.fillMaxSize()
+                )
+                Feature.MICROPHONE -> MicScreen(
+                    repository = diagnosticViewModel.mic,
+                    modifier = Modifier.fillMaxSize()
+                )
+                Feature.SYSTEM_INFO -> SystemInfoScreen(
+                    repository = diagnosticViewModel.sysInfo,
+                    modifier = Modifier.fillMaxSize()
+                )
+                Feature.COMPASS -> CompassScreen(
+                    repository = diagnosticViewModel.compass,
+                    modifier = Modifier.fillMaxSize()
+                )
+                Feature.CLOCK -> ClockScreen(
+                    repository = diagnosticViewModel.clock,
+                    modifier = Modifier.fillMaxSize()
+                )
+                Feature.CAR_BUTTONS -> CarButtonScreen(
+                    repository = diagnosticViewModel.carButtons,
+                    modifier = Modifier.fillMaxSize()
+                )
+                else -> FeaturePlaceholder(
+                    feature = selectedFeature,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
 
             // Controls overlay — top-right corner
             ControlsOverlay(
