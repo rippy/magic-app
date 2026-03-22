@@ -32,3 +32,9 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Superpowers brainstorm sessions
+.superpowers/
+
+# Git worktrees
+.worktrees/
