@@ -35,3 +35,6 @@ google-services.json
 
 # Superpowers brainstorm sessions
 .superpowers/
+
+# Git worktrees
+.worktrees/
