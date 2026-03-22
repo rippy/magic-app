@@ -20,11 +20,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.magicapp.AppViewModel
+import com.example.magicapp.DiagnosticViewModel
 import com.example.magicapp.Feature
 
 @Composable
 fun GlanceScreen(
     viewModel: AppViewModel,
+    diagnosticViewModel: DiagnosticViewModel,
     modifier: Modifier = Modifier
 ) {
     Column(

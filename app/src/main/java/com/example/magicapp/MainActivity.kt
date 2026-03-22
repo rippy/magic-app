@@ -12,17 +12,16 @@ import com.example.magicapp.ui.theme.MagicAppTheme
 class MainActivity : ComponentActivity() {
 
     private val viewModel: AppViewModel by viewModels()
+    private val diagnosticViewModel: DiagnosticViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Keep screen on while app is active
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-
         setContent {
             MagicAppTheme {
                 AppNavHost(
                     viewModel = viewModel,
+                    diagnosticViewModel = diagnosticViewModel,
                     modifier = Modifier.fillMaxSize()
                 )
             }
