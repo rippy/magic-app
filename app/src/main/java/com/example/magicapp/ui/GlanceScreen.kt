@@ -10,23 +10,29 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.magicapp.AppViewModel
+import com.example.magicapp.DiagnosticViewModel
 import com.example.magicapp.Feature
 
 @Composable
 fun GlanceScreen(
     viewModel: AppViewModel,
+    diagnosticViewModel: DiagnosticViewModel,
     modifier: Modifier = Modifier
 ) {
+    val wifiState by diagnosticViewModel.wifi.state.collectAsState()
+    val btState by diagnosticViewModel.bt.state.collectAsState()
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -34,36 +40,46 @@ fun GlanceScreen(
             .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Hero card — weight 2
-        HeroCard(
-            viewModel = viewModel,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(2f)
-        )
-
-        // WiFi + BT tiles — weight 1
+        // Top row: hero card (weight 3) + WiFi/BT scan tiles stacked (weight 1)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            FeatureTile(
-                label = Feature.WIFI_SCANNER.label,
+            HeroCard(
+                viewModel = viewModel,
+                diagnosticViewModel = diagnosticViewModel,
                 modifier = Modifier
-                    .weight(1f)
+                    .weight(3f)
                     .fillMaxHeight()
             )
-            FeatureTile(
-                label = Feature.BT_SCANNER.label,
+            Column(
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxHeight()
-            )
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ScanTile(
+                    label = "WiFi",
+                    count = wifiState.networks.size,
+                    lastScannedMs = wifiState.lastScannedMs,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                )
+                ScanTile(
+                    label = "BT",
+                    count = btState.bleDevices.size,
+                    lastScannedMs = btState.lastScannedMs,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                )
+            }
         }
 
-        // Quick tiles row — fixed height 72dp
+        // Bottom quick-launch tiles
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -85,25 +101,47 @@ fun GlanceScreen(
 @Composable
 fun HeroCard(
     viewModel: AppViewModel,
+    diagnosticViewModel: DiagnosticViewModel,
     modifier: Modifier = Modifier
 ) {
+    val gpsState by diagnosticViewModel.gps.state.collectAsState()
+
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            // Hero content placeholder
-            Text(
-                text = "Hero Content",
-                modifier = Modifier.align(Alignment.Center),
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            // Controls overlay — top-right corner
+            Column(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(16.dp)
+            ) {
+                Text(
+                    "%.0f".format(gpsState.speedKph),
+                    style = MaterialTheme.typography.displayLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    "km/h",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+                androidx.compose.foundation.layout.Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
+                Text(
+                    "%.4f, %.4f".format(gpsState.latitude, gpsState.longitude),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    "%.1f°  Alt %.0fm".format(gpsState.bearing, gpsState.altitude),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
             ControlsOverlay(
                 viewModel = viewModel,
                 modifier = Modifier
@@ -115,48 +153,62 @@ fun HeroCard(
 }
 
 @Composable
-fun FeatureTile(
+fun ScanTile(
     label: String,
+    count: Int,
+    lastScannedMs: Long?,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Text(
-                text = label,
-                modifier = Modifier.align(Alignment.Center),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    label,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                )
+                Text(
+                    "$count",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                if (lastScannedMs != null) {
+                    val secs = (System.currentTimeMillis() - lastScannedMs) / 1000
+                    Text(
+                        "Last scanned: ${secs}s ago",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    )
+                } else {
+                    Text(
+                        "—",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
-fun QuickTile(
-    label: String,
-    modifier: Modifier = Modifier
-) {
+fun QuickTile(label: String, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.secondaryContainer
         )
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(
-                text = label,
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 4.dp),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurface
+                label,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSecondaryContainer
             )
         }
     }

@@ -19,6 +19,6 @@ enum class Feature(val label: String, val icon: String) {
 
     companion object {
         /** Features shown as quick tiles in GlanceScreen */
-        val glanceTiles = listOf(GPS, WIFI_SCANNER, BT_SCANNER, SYSTEM_INFO)
+        val glanceTiles = listOf(NEWS, YOUTUBE, BROWSER, VOICE_ASSISTANT)
     }
 }

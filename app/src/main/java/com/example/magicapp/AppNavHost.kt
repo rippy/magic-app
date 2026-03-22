@@ -18,6 +18,7 @@ private const val ROUTE_DETAIL = "detail"
 @Composable
 fun AppNavHost(
     viewModel: AppViewModel,
+    diagnosticViewModel: DiagnosticViewModel,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController()
 ) {
@@ -43,10 +44,10 @@ fun AppNavHost(
         modifier = modifier
     ) {
         composable(ROUTE_GLANCE) {
-            GlanceScreen(viewModel = viewModel)
+            GlanceScreen(viewModel = viewModel, diagnosticViewModel = diagnosticViewModel)
         }
         composable(ROUTE_DETAIL) {
-            DetailScreen(viewModel = viewModel)
+            DetailScreen(viewModel = viewModel, diagnosticViewModel = diagnosticViewModel)
         }
     }
 }
