@@ -48,3 +48,47 @@ class ClockRepositoryTripTest {
         assertEquals(false, repo.state.value.tripRunning)
     }
 }
+
+// --- CarButtonRepository Tests ---
+// Uses the (Long, Int, Int) overload to avoid instantiating android.view.KeyEvent
+// in a JVM test environment (Android stubs throw RuntimeException when called from JVM).
+
+class CarButtonRepositoryTest {
+
+    // KeyEvent constants are safe to reference as they are just Int literals.
+    private val ACTION_DOWN = android.view.KeyEvent.ACTION_DOWN
+    private val ACTION_UP = android.view.KeyEvent.ACTION_UP
+    private val KEYCODE_MEDIA_PLAY = android.view.KeyEvent.KEYCODE_MEDIA_PLAY
+
+    @Test
+    fun `onKeyEvent appends event to list`() {
+        val repo = com.example.magicapp.features.events.CarButtonRepository()
+        repo.onKeyEvent(System.currentTimeMillis(), ACTION_DOWN, KEYCODE_MEDIA_PLAY)
+        assertEquals(1, repo.events.value.size)
+        assertEquals("DOWN", repo.events.value[0].action)
+    }
+
+    @Test
+    fun `onKeyEvent records UP action correctly`() {
+        val repo = com.example.magicapp.features.events.CarButtonRepository()
+        repo.onKeyEvent(System.currentTimeMillis(), ACTION_UP, KEYCODE_MEDIA_PLAY)
+        assertEquals("UP", repo.events.value[0].action)
+    }
+
+    @Test
+    fun `onKeyEvent keeps only last 100 events`() {
+        val repo = com.example.magicapp.features.events.CarButtonRepository()
+        repeat(105) {
+            repo.onKeyEvent(System.currentTimeMillis(), ACTION_DOWN, KEYCODE_MEDIA_PLAY)
+        }
+        assertEquals(100, repo.events.value.size)
+    }
+
+    @Test
+    fun `clear empties the event list`() {
+        val repo = com.example.magicapp.features.events.CarButtonRepository()
+        repo.onKeyEvent(System.currentTimeMillis(), ACTION_DOWN, KEYCODE_MEDIA_PLAY)
+        repo.clear()
+        assertEquals(0, repo.events.value.size)
+    }
+}
